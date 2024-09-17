@@ -174,6 +174,14 @@ void PublisherApp::stop()
     cv_.notify_one();
 }
 
+void PublisherApp::rescan()
+{
+    if (RETCODE_OK != participant_->set_qos(participant_->get_qos()))
+    {
+        std::cerr << "Error rescanning network interfaces." << std::endl;
+    }
+}
+
 } // namespace hello_world
 } // namespace examples
 } // namespace fastdds

@@ -163,6 +163,14 @@ void ListenerSubscriberApp::stop()
     terminate_cv_.notify_all();
 }
 
+void ListenerSubscriberApp::rescan()
+{
+    if (RETCODE_OK != participant_->set_qos(participant_->get_qos()))
+    {
+        std::cerr << "Error rescanning network interfaces." << std::endl;
+    }
+}
+
 } // namespace hello_world
 } // namespace examples
 } // namespace fastdds

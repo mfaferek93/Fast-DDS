@@ -88,9 +88,20 @@ int main(
 
         stop_app_handler = [&](int signum)
                 {
-                    std::cout << "\n" << CLIParser::parse_signal(signum) << " received, stopping " << app_name
-                              << " execution." << std::endl;
-                    app->stop();
+                    std::cout << "\n" << CLIParser::parse_signal(signum) << " received";
+                    
+#ifndef _WIN32
+                    if (SIGHUP == signum)
+                    {
+                        std::cout << ", rescaning network interfaces." << std::endl;
+                        app->rescan();
+                    }
+                    else
+#endif // _WIN32
+                    {
+                        std::cout << ", stopping " << app_name << " execution." << std::endl;
+                        app->stop();
+                    }
                 };
 
         signal(SIGINT, signal_handler);

@@ -55,6 +55,9 @@ public:
     //! Trigger the end of execution
     void stop() override;
 
+    //! Rescan network interfaces
+    void rescan() override;
+
 private:
 
     //! Return the current state of execution

@@ -42,6 +42,9 @@ public:
     //! Trigger the end of execution
     virtual void stop() = 0;
 
+    //! Rescan network interfaces
+    virtual void rescan() = 0;
+
     //! Factory method to create applications based on configuration
     static std::shared_ptr<Application> make_app(
             const CLIParser::hello_world_config& config,

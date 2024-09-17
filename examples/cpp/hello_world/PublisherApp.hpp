@@ -58,6 +58,8 @@ public:
     //! Stop publisher
     void stop() override;
 
+    void rescan() override;
+
 private:
 
     //! Return the current state of execution

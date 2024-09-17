@@ -182,6 +182,14 @@ void WaitsetSubscriberApp::stop()
     terminate_condition_.set_trigger_value(true);
 }
 
+void WaitsetSubscriberApp::rescan()
+{
+    if (RETCODE_OK != participant_->set_qos(participant_->get_qos()))
+    {
+        std::cerr << "Error rescanning network interfaces." << std::endl;
+    }
+}
+
 } // namespace hello_world
 } // namespace examples
 } // namespace fastdds
