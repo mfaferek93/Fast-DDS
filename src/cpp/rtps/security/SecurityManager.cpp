@@ -105,8 +105,10 @@ SecurityManager::SecurityManager(
     participant->getRTPSParticipantAttributes().allocation.locators.max_multicast_locators,
     participant->getRTPSParticipantAttributes().allocation.data_limits})
 {
+    std::cout << __func__ << std::endl;
     assert(participant != nullptr);
     static OpenSSLInit openssl_init;
+    std::cout << __func__ << std::endl;
 }
 
 SecurityManager::~SecurityManager()
@@ -118,6 +120,7 @@ bool SecurityManager::init(
         ParticipantSecurityAttributes& attributes,
         const PropertyPolicy& participant_properties)
 {
+    std::cout << __func__ << std::endl;
     try
     {
         SecurityException exception;
@@ -392,11 +395,13 @@ bool SecurityManager::init(
     }
 
     enable_security_manager();
+    std::cout << __func__ << std::endl;
     return true;
 }
 
 void SecurityManager::cancel_init()
 {
+    std::cout << __func__ << std::endl;
     SecurityException exception;
     if (local_participant_crypto_handle_)
     {
@@ -434,10 +439,12 @@ void SecurityManager::cancel_init()
     }
 
     disable_security_manager();
+    std::cout << __func__ << std::endl;
 }
 
 void SecurityManager::destroy()
 {
+    std::cout << __func__ << std::endl;
     disable_security_manager();
 
     if (authentication_plugin_ != nullptr)
@@ -524,11 +531,13 @@ void SecurityManager::destroy()
         delete logging_plugin_;
         logging_plugin_ = nullptr;
     }
+    std::cout << __func__ << std::endl;
 }
 
 void SecurityManager::remove_discovered_participant_info(
         const DiscoveredParticipantInfo::AuthUniquePtr& auth_ptr)
 {
+    std::cout << __func__ << std::endl;
     SecurityException exception;
 
     if (auth_ptr)
@@ -548,12 +557,14 @@ void SecurityManager::remove_discovered_participant_info(
             auth_ptr->change_sequence_number_ = SequenceNumber_t::unknown();
         }
     }
+    std::cout << __func__ << std::endl;
 }
 
 bool SecurityManager::restore_discovered_participant_info(
         const GUID_t& remote_participant_key,
         DiscoveredParticipantInfo::AuthUniquePtr& auth_ptr)
 {
+    std::cout << __func__ << std::endl;
     SecurityException exception;
     bool returned_value = false;
 
@@ -570,13 +581,14 @@ bool SecurityManager::restore_discovered_participant_info(
     {
         remove_discovered_participant_info(std::move(auth_ptr));
     }
-
+    std::cout << __func__ << std::endl;
     return returned_value;
 }
 
 bool SecurityManager::discovered_participant(
         const ParticipantProxyData& participant_data)
 {
+    std::cout << __func__ << std::endl;
     auto sentry = is_security_manager_initialized();
     if (!sentry)
     {
@@ -718,6 +730,7 @@ bool SecurityManager::discovered_participant(
     {
         notify_participant_authorized(*remote_participant_data);
     }
+    std::cout << __func__ << std::endl;
 
     return returnedValue;
 }
@@ -725,6 +738,7 @@ bool SecurityManager::discovered_participant(
 void SecurityManager::remove_participant(
         const ParticipantProxyData& participant_data)
 {
+    std::cout << __func__ << std::endl;
     auto sentry = is_security_manager_initialized();
     if (!sentry)
     {
@@ -807,6 +821,7 @@ void SecurityManager::remove_participant(
 
         discovered_participants_.erase(participant_data.m_guid);
     }
+    std::cout << __func__ << std::endl;
 }
 
 bool SecurityManager::on_process_handshake(
@@ -816,9 +831,11 @@ bool SecurityManager::on_process_handshake(
         HandshakeMessageToken&& message_in,
         bool& notify_part_authorized)
 {
+    std::cout << __func__ << "start" << std::endl;
     auto sentry = is_security_manager_initialized();
     if (!sentry)
     {
+        std::cout << __func__ << "end 21" << std::endl;
         return false;
     }
 
@@ -862,6 +879,7 @@ bool SecurityManager::on_process_handshake(
     }
     else if (remote_participant_info->auth_status_ == AUTHENTICATION_OK)
     {
+        std::cout << __func__ << "end 22" << std::endl;
         return true;
     }
 
@@ -869,6 +887,7 @@ bool SecurityManager::on_process_handshake(
     {
         remote_participant_info->auth_status_ = AUTHENTICATION_FAILED;
         on_validation_failed(participant_data, exception);
+        std::cout << __func__ << "end 23" << std::endl;
         return false;
     }
 
@@ -1012,12 +1031,14 @@ bool SecurityManager::on_process_handshake(
                 break;
         }
     }
+    std::cout << __func__ << "end" << std::endl;
 
     return returnedValue;
 }
 
 bool SecurityManager::create_entities()
 {
+    std::cout << __func__ << std::endl;
     if (create_participant_stateless_message_entities())
     {
         if (crypto_plugin_ == nullptr || create_participant_volatile_message_secure_entities())
@@ -1030,17 +1051,21 @@ bool SecurityManager::create_entities()
     }
 
     cancel_init();
+    std::cout << __func__ << std::endl;
     return false;
 }
 
 void SecurityManager::delete_entities()
 {
+    std::cout << __func__ << std::endl;
     delete_participant_volatile_message_secure_entities();
     delete_participant_stateless_message_entities();
+    std::cout << __func__ << std::endl;
 }
 
 bool SecurityManager::create_participant_stateless_message_entities()
 {
+    std::cout << __func__ << std::endl;
     create_participant_stateless_message_pool();
     if (create_participant_stateless_message_writer())
     {
@@ -1052,18 +1077,22 @@ bool SecurityManager::create_participant_stateless_message_entities()
     }
 
     delete_participant_stateless_message_pool();
+    std::cout << __func__ << std::endl;
     return false;
 }
 
 void SecurityManager::delete_participant_stateless_message_entities()
 {
+    std::cout << __func__ << std::endl;
     delete_participant_stateless_message_reader();
     delete_participant_stateless_message_writer();
     delete_participant_stateless_message_pool();
+    std::cout << __func__ << std::endl;
 }
 
 void SecurityManager::create_participant_stateless_message_pool()
 {
+    std::cout << __func__ << std::endl;
     participant_stateless_message_writer_hattr_ =
     { PREALLOCATED_WITH_REALLOC_MEMORY_MODE, participant_->getMaxMessageSize(), 20, 100 };
     participant_stateless_message_reader_hattr_ =
@@ -1077,10 +1106,12 @@ void SecurityManager::create_participant_stateless_message_pool()
 
     PoolConfig reader_cfg = PoolConfig::from_history_attributes(participant_stateless_message_reader_hattr_);
     participant_stateless_message_pool_->reserve_history(reader_cfg, true);
+    std::cout << __func__ << std::endl;
 }
 
 void SecurityManager::delete_participant_stateless_message_pool()
 {
+    std::cout << __func__ << std::endl;
     if (participant_stateless_message_pool_)
     {
         PoolConfig writer_cfg = PoolConfig::from_history_attributes(participant_stateless_message_writer_hattr_);
@@ -1091,10 +1122,12 @@ void SecurityManager::delete_participant_stateless_message_pool()
 
         participant_stateless_message_pool_.reset();
     }
+    std::cout << __func__ << std::endl;
 }
 
 bool SecurityManager::create_participant_stateless_message_writer()
 {
+    std::cout << __func__ << std::endl;
     participant_stateless_message_writer_history_ = new WriterHistory(participant_stateless_message_writer_hattr_);
 
     const RTPSParticipantAttributes& pattr = participant_->getRTPSParticipantAttributes();
@@ -1123,12 +1156,13 @@ bool SecurityManager::create_participant_stateless_message_writer()
     EPROSIMA_LOG_ERROR(SECURITY, "Participant Stateless Message Writer creation failed");
     delete(participant_stateless_message_writer_history_);
     participant_stateless_message_writer_history_ = nullptr;
-
+std::cout << __func__ << std::endl;
     return false;
 }
 
 void SecurityManager::delete_participant_stateless_message_writer()
 {
+    std::cout << __func__ << std::endl;
     if (participant_stateless_message_writer_ != nullptr)
     {
         participant_->deleteUserEndpoint(participant_stateless_message_writer_->getGuid());
@@ -1140,10 +1174,12 @@ void SecurityManager::delete_participant_stateless_message_writer()
         delete participant_stateless_message_writer_history_;
         participant_stateless_message_writer_history_ = nullptr;
     }
+    std::cout << __func__ << std::endl;
 }
 
 bool SecurityManager::create_participant_stateless_message_reader()
 {
+    std::cout << __func__ << std::endl;
     participant_stateless_message_reader_history_ = new ReaderHistory(participant_stateless_message_reader_hattr_);
 
     const RTPSParticipantAttributes& pattr = participant_->getRTPSParticipantAttributes();
@@ -1175,11 +1211,13 @@ bool SecurityManager::create_participant_stateless_message_reader()
     EPROSIMA_LOG_ERROR(SECURITY, "Participant Stateless Message Reader creation failed");
     delete(participant_stateless_message_reader_history_);
     participant_stateless_message_reader_history_ = nullptr;
+    std::cout << __func__ << std::endl;
     return false;
 }
 
 void SecurityManager::delete_participant_stateless_message_reader()
 {
+    std::cout << __func__ << std::endl;
     if (participant_stateless_message_reader_ != nullptr)
     {
         participant_->deleteUserEndpoint(participant_stateless_message_reader_->getGuid());
@@ -1191,10 +1229,12 @@ void SecurityManager::delete_participant_stateless_message_reader()
         delete participant_stateless_message_reader_history_;
         participant_stateless_message_reader_history_ = nullptr;
     }
+    std::cout << __func__ << std::endl;
 }
 
 bool SecurityManager::create_participant_volatile_message_secure_entities()
 {
+    std::cout << __func__ << std::endl;
     create_participant_volatile_message_secure_pool();
 
     if (create_participant_volatile_message_secure_writer())
@@ -1208,18 +1248,22 @@ bool SecurityManager::create_participant_volatile_message_secure_entities()
     }
 
     delete_participant_volatile_message_secure_pool();
+    std::cout << __func__ << std::endl;
     return false;
 }
 
 void SecurityManager::delete_participant_volatile_message_secure_entities()
 {
+    std::cout << __func__ << std::endl;
     delete_participant_volatile_message_secure_reader();
     delete_participant_volatile_message_secure_writer();
     delete_participant_volatile_message_secure_pool();
+    std::cout << __func__ << std::endl;
 }
 
 void SecurityManager::create_participant_volatile_message_secure_pool()
 {
+    std::cout << __func__ << std::endl;
     participant_volatile_message_secure_hattr_ =
     { PREALLOCATED_WITH_REALLOC_MEMORY_MODE, participant_->getMaxMessageSize(), 10, 0 };
 
@@ -1228,10 +1272,12 @@ void SecurityManager::create_participant_volatile_message_secure_pool()
             TopicPayloadPoolRegistry::get("DCPSParticipantVolatileMessageSecure", pool_cfg);
     participant_volatile_message_secure_pool_->reserve_history(pool_cfg, false);
     participant_volatile_message_secure_pool_->reserve_history(pool_cfg, true);
+    std::cout << __func__ << std::endl;
 }
 
 void SecurityManager::delete_participant_volatile_message_secure_pool()
 {
+    std::cout << __func__ << std::endl;
     if (participant_volatile_message_secure_pool_)
     {
         PoolConfig pool_cfg = PoolConfig::from_history_attributes(participant_volatile_message_secure_hattr_);
@@ -1239,10 +1285,12 @@ void SecurityManager::delete_participant_volatile_message_secure_pool()
         participant_volatile_message_secure_pool_->release_history(pool_cfg, false);
         participant_volatile_message_secure_pool_.reset();
     }
+    std::cout << __func__ << std::endl;
 }
 
 bool SecurityManager::create_participant_volatile_message_secure_writer()
 {
+    std::cout << __func__ << std::endl;
     participant_volatile_message_secure_writer_history_ =
             new WriterHistory(participant_volatile_message_secure_hattr_);
 
@@ -1276,12 +1324,13 @@ bool SecurityManager::create_participant_volatile_message_secure_writer()
     EPROSIMA_LOG_ERROR(SECURITY, "Participant Volatile Message Writer creation failed");
     delete(participant_volatile_message_secure_writer_history_);
     participant_volatile_message_secure_writer_history_ = nullptr;
-
+std::cout << __func__ << std::endl;
     return false;
 }
 
 void SecurityManager::delete_participant_volatile_message_secure_writer()
 {
+    std::cout << __func__ << std::endl;
     if (participant_volatile_message_secure_writer_ != nullptr)
     {
         participant_->deleteUserEndpoint(participant_volatile_message_secure_writer_->getGuid());
@@ -1293,10 +1342,12 @@ void SecurityManager::delete_participant_volatile_message_secure_writer()
         delete participant_volatile_message_secure_writer_history_;
         participant_volatile_message_secure_writer_history_ = nullptr;
     }
+    std::cout << __func__ << std::endl;
 }
 
 bool SecurityManager::create_participant_volatile_message_secure_reader()
 {
+    std::cout << __func__ << std::endl;
     participant_volatile_message_secure_reader_history_ =
             new ReaderHistory(participant_volatile_message_secure_hattr_);
 
@@ -1329,11 +1380,13 @@ bool SecurityManager::create_participant_volatile_message_secure_reader()
     EPROSIMA_LOG_ERROR(SECURITY, "Participant Volatile Message Reader creation failed");
     delete(participant_volatile_message_secure_reader_history_);
     participant_volatile_message_secure_reader_history_ = nullptr;
+    std::cout << __func__ << std::endl;
     return false;
 }
 
 void SecurityManager::delete_participant_volatile_message_secure_reader()
 {
+    std::cout << __func__ << std::endl;
     if (participant_volatile_message_secure_reader_ != nullptr)
     {
         participant_->deleteUserEndpoint(participant_volatile_message_secure_reader_->getGuid());
@@ -1345,6 +1398,7 @@ void SecurityManager::delete_participant_volatile_message_secure_reader()
         delete participant_volatile_message_secure_reader_history_;
         participant_volatile_message_secure_reader_history_ = nullptr;
     }
+    std::cout << __func__ << std::endl;
 }
 
 ParticipantGenericMessage SecurityManager::generate_authentication_message(
@@ -1352,6 +1406,7 @@ ParticipantGenericMessage SecurityManager::generate_authentication_message(
         const GUID_t& destination_participant_key,
         HandshakeMessageToken& handshake_message) const
 {
+    std::cout << __func__ << std::endl;
     ParticipantGenericMessage message;
 
     message.message_identity().source_guid(auth_source_guid);
@@ -1361,6 +1416,7 @@ ParticipantGenericMessage SecurityManager::generate_authentication_message(
     message.message_class_id(AUTHENTICATION_PARTICIPANT_STATELESS_MESSAGE);
     message.message_data().push_back(handshake_message);
 
+std::cout << __func__ << std::endl;
     return message;
 }
 
@@ -1368,6 +1424,7 @@ ParticipantGenericMessage SecurityManager::generate_participant_crypto_token_mes
         const GUID_t& destination_participant_key,
         ParticipantCryptoTokenSeq& crypto_tokens) const
 {
+    std::cout << __func__ << std::endl;
     ParticipantGenericMessage message;
 
     message.message_identity().source_guid(auth_source_guid);
@@ -1375,7 +1432,7 @@ ParticipantGenericMessage SecurityManager::generate_participant_crypto_token_mes
     message.destination_participant_key(destination_participant_key);
     message.message_class_id(GMCLASSID_SECURITY_PARTICIPANT_CRYPTO_TOKENS);
     message.message_data().assign(crypto_tokens.begin(), crypto_tokens.end());
-
+std::cout << __func__ << std::endl;
     return message;
 }
 
@@ -1385,6 +1442,7 @@ ParticipantGenericMessage SecurityManager::generate_writer_crypto_token_message(
         const GUID_t& source_endpoint_key,
         ParticipantCryptoTokenSeq& crypto_tokens) const
 {
+    std::cout << __func__ << std::endl;
     ParticipantGenericMessage message;
 
     message.message_identity().source_guid(auth_source_guid);
@@ -1394,7 +1452,7 @@ ParticipantGenericMessage SecurityManager::generate_writer_crypto_token_message(
     message.source_endpoint_key(source_endpoint_key);
     message.message_class_id(GMCLASSID_SECURITY_WRITER_CRYPTO_TOKENS);
     message.message_data().assign(crypto_tokens.begin(), crypto_tokens.end());
-
+std::cout << __func__ << std::endl;
     return message;
 }
 
@@ -1404,6 +1462,7 @@ ParticipantGenericMessage SecurityManager::generate_reader_crypto_token_message(
         const GUID_t& source_endpoint_key,
         ParticipantCryptoTokenSeq& crypto_tokens) const
 {
+    std::cout << __func__ << std::endl;
     ParticipantGenericMessage message;
 
     message.message_identity().source_guid(auth_source_guid);
@@ -1414,12 +1473,14 @@ ParticipantGenericMessage SecurityManager::generate_reader_crypto_token_message(
     message.message_class_id(GMCLASSID_SECURITY_READER_CRYPTO_TOKENS);
     message.message_data().assign(crypto_tokens.begin(), crypto_tokens.end());
 
+std::cout << __func__ << std::endl;
     return message;
 }
 
 void SecurityManager::process_participant_stateless_message(
         const CacheChange_t* const change)
 {
+    std::cout << __func__ << std::endl;
     assert(change);
 
     auto sentry = is_security_manager_initialized();
@@ -1650,11 +1711,13 @@ void SecurityManager::process_participant_stateless_message(
     {
         EPROSIMA_LOG_INFO(SECURITY, "Discarted ParticipantGenericMessage with class id " << message.message_class_id());
     }
+    std::cout << __func__ << std::endl;
 }
 
 void SecurityManager::process_participant_volatile_message_secure(
         const CacheChange_t* const change)
 {
+    std::cout << __func__ << std::endl;
     assert(change);
 
     auto sentry = is_security_manager_initialized();
@@ -1919,33 +1982,39 @@ void SecurityManager::process_participant_volatile_message_secure(
     {
         EPROSIMA_LOG_INFO(SECURITY, "Discarted ParticipantGenericMessage with class id " << message.message_class_id());
     }
+    std::cout << __func__ << std::endl;
 }
 
 void SecurityManager::ParticipantStatelessMessageListener::onNewCacheChangeAdded(
         RTPSReader* reader,
         const CacheChange_t* const change)
 {
+    std::cout << __func__ << std::endl;
     manager_.process_participant_stateless_message(change);
 
     ReaderHistory* history = reader->getHistory();
     assert(history);
     history->remove_change(const_cast<CacheChange_t*>(change));
+    std::cout << __func__ << std::endl;
 }
 
 void SecurityManager::ParticipantVolatileMessageListener::onNewCacheChangeAdded(
         RTPSReader* reader,
         const CacheChange_t* const change)
 {
+    std::cout << __func__ << std::endl;
     manager_.process_participant_volatile_message_secure(change);
 
     ReaderHistory* history = reader->getHistory();
     assert(history);
     history->remove_change(const_cast<CacheChange_t*>(change));
+    std::cout << __func__ << std::endl;
 }
 
 bool SecurityManager::get_identity_token(
         IdentityToken** identity_token) const
 {
+    std::cout << __func__ << std::endl;
     assert(identity_token);
 
     auto sentry = is_security_manager_initialized();
@@ -1960,13 +2029,14 @@ bool SecurityManager::get_identity_token(
         return authentication_plugin_->get_identity_token(identity_token,
                        *local_identity_handle_, exception);
     }
-
+std::cout << __func__ << std::endl;
     return false;
 }
 
 bool SecurityManager::return_identity_token(
         IdentityToken* identity_token) const
 {
+    std::cout << __func__ << std::endl;
     if (identity_token == nullptr)
     {
         return true;
@@ -1984,13 +2054,14 @@ bool SecurityManager::return_identity_token(
         return authentication_plugin_->return_identity_token(identity_token,
                        exception);
     }
-
+std::cout << __func__ << std::endl;
     return false;
 }
 
 bool SecurityManager::get_permissions_token(
         PermissionsToken** permissions_token) const
 {
+    std::cout << __func__ << std::endl;
     assert(permissions_token);
 
     auto sentry = is_security_manager_initialized();
@@ -2005,13 +2076,14 @@ bool SecurityManager::get_permissions_token(
         return access_plugin_->get_permissions_token(permissions_token,
                        *local_permissions_handle_, exception);
     }
-
+std::cout << __func__ << std::endl;
     return false;
 }
 
 bool SecurityManager::return_permissions_token(
         PermissionsToken* permissions_token) const
 {
+    std::cout << __func__ << std::endl;
     if (permissions_token == nullptr)
     {
         return true;
@@ -2029,12 +2101,13 @@ bool SecurityManager::return_permissions_token(
         return access_plugin_->return_permissions_token(permissions_token,
                        exception);
     }
-
+std::cout << __func__ << std::endl;
     return false;
 }
 
 uint32_t SecurityManager::builtin_endpoints() const
 {
+    std::cout << __func__ << std::endl;
     uint32_t be = 0;
 
     auto sentry = is_security_manager_initialized();
@@ -2059,7 +2132,7 @@ uint32_t SecurityManager::builtin_endpoints() const
     {
         be |= BUILTIN_ENDPOINT_PARTICIPANT_VOLATILE_MESSAGE_SECURE_WRITER;
     }
-
+std::cout << __func__ << std::endl;
     return be;
 }
 
@@ -2067,6 +2140,7 @@ bool SecurityManager::check_guid_comes_from(
         const GUID_t& adjusted,
         const GUID_t& original) const
 {
+    std::cout << __func__ << std::endl;
     bool ret = (original == adjusted);
     if (!ret && authentication_plugin_ != nullptr)
     {
@@ -2077,6 +2151,7 @@ bool SecurityManager::check_guid_comes_from(
             ret = part_it->second->check_guid_comes_from(authentication_plugin_, adjusted, original);
         }
     }
+    std::cout << __func__ << std::endl;
     return ret;
 }
 
